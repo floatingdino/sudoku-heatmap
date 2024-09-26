@@ -27,15 +27,16 @@ const STRATEGIES = [
 
 const ROWS = 'ABCDEFGHJ';
 
-type CellSolution = {
+export type CellSolution = {
   touches: number
   solved: boolean
   strategies: Set<string>
   index: number
   solution: string | null
+  difficulty: number
 }
 
-export default function parseSolution(working: string) {
+export default function parseSolution(working: string): CellSolution[] {
   const solutionMap: CellSolution[] = Array.from({length: 81}, (_, i) => ({index: i, touches: 0, solved: false, solution: null, strategies: new Set(), difficulty: -1}))
 
   let currentStrategy = ''
