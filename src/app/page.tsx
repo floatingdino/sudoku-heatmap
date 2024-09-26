@@ -16,6 +16,7 @@ const Container = createStyle("div", "mx-auto px-4 max-w-lg")
 const SAMPLE_PUZZLES = [
   '.7.....43.4...961.8..6349...94.52...35846..2....8..53..8..7..919.21....5..7.4.8.2',
   '72..96..3...2.5....8...4.2........6.1.65.38.7.4........3.8...9....7.2...2..43..18', // SudokuWiki "Moderate",
+  '3.9...4..2..7.9....87......75..6.23.6..9.4..8.28.5..41......59....1.6..7..6...1.4', //SudokuWiki "Tough"
 ]
 
 const LEGAL_NUMBERS = ['1', '2', '3', '4', '5', '6', '7', '8', '9']
@@ -39,7 +40,7 @@ function Cell({puzzleValue, solutionValue, normalisedDifficulty, hardest = false
 }
 
 export default function Home() {
-  const [puzzle, setPuzzle] = useState(SAMPLE_PUZZLES[1])
+  const [puzzle, setPuzzle] = useState(SAMPLE_PUZZLES[2])
   const [ready, setReady] = useState(false)
   const [lastRun, setLastRun] = useState('')
   const runtime = useRef<PyodideInterface | null>(null)
@@ -48,7 +49,7 @@ export default function Home() {
     loadPyodide().then(py => {
       runtime.current = py
       py.setStdout({batched: (x) => {
-        console.log(x)
+        // console.log(x)
         return setLastRun((y) => `${y}
 ${x}`);
       }})

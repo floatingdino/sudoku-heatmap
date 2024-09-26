@@ -44,12 +44,18 @@ export default function parseSolution(working: string): CellSolution[] {
   working.split('\n').forEach((line) => {
     if (line.startsWith("Try")) {
       currentStrategy = line.slice(3).trim()
+      console.log(currentStrategy)
       return
     }
-    if (!line.startsWith(" * ")) {
+    if (!line.startsWith(" * ") && !line.startsWith(" - ")) {
       return
     }
-    const cells = line.match(rx)
+    let cells = line.match(rx)?.flat()
+    if (currentStrategy === "X-wing") {
+      const columns = line.match("columns \\(([\\d, ]+)\\)")?.[1]?.split(", ") || []
+      const rows = line.match(`rows \\(([${ROWS}, ]+)\\)`)?.[1]?.split(", ") || []
+      cells = rows.flatMap((row) => columns.map((column) => row + column))
+    }
     cells?.forEach((cell) => {
       const [rowName, column] = cell.split('')
       const lineRow = ROWS.indexOf(rowName)
@@ -65,11 +71,7 @@ export default function parseSolution(working: string): CellSolution[] {
         console.log(line)
       }
       solutionCell.touches++
-      const solved = !line.includes('{')
-      if (solved) {
-        solutionCell.solved = true
-        solutionCell.strategies.add(currentStrategy)
-      }
+      solutionCell.strategies.add(currentStrategy)
     })
   })
 
@@ -85,11 +87,10 @@ export default function parseSolution(working: string): CellSolution[] {
 }
 
 export function rateCell(cell: CellSolution) {
-  if (!cell.solved) {
+  if (cell.strategies.size === 0) {
     return -1
   }
   const maxDifficulty = Array.from(cell.strategies.values()).map((s) => STRATEGIES.indexOf(s)).reduce((a, b) => Math.max(a, b), -1)
-
   return cell.touches / 10 + maxDifficulty
 }
 
