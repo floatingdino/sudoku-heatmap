@@ -1,13 +1,15 @@
 "use client"
 
 
+import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
+import { preload } from "react-dom";
 import createStyle from "@josephmark/createstyle";
 import Script from "next/script";
-import { CSSProperties, useEffect, useMemo, useRef, useState } from "react";
-import type { PyodideInterface } from "pyodide";
-import parseSolution, { CellSolution, interpolateColor, normaliseDifficulty } from "@/utils/parseSolution";
 import clsx from "clsx";
 import * as Popover from "@radix-ui/react-popover"
+import type { PyodideInterface } from "pyodide";
+
+import parseSolution, { CellSolution, interpolateColor, normaliseDifficulty } from "@/utils/parseSolution";
 
 declare const loadPyodide: () => Promise<PyodideInterface>
 
@@ -38,6 +40,8 @@ function Cell({puzzleValue, solutionValue, normalisedDifficulty, hardest = false
   </Popover.Root>
   )
 }
+
+preload('/roukaour_sudoku_solver.whl', {as: 'fetch'})
 
 export default function Home() {
   const [puzzle, setPuzzle] = useState(SAMPLE_PUZZLES[2])
@@ -91,8 +95,8 @@ ${x}`);
     <>
     <Script src="https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js" strategy="lazyOnload" onLoad={onLoad} />
     <Container className="py-4">
-      <label className="block">Enter Puzzle</label>
-      <textarea value={puzzle} onChange={e => setPuzzle(e.target.value)} className="w-full border mb-4" />
+      <label className="block" htmlFor="puzzle">Enter Puzzle</label>
+      <textarea value={puzzle} id="puzzle" onChange={e => setPuzzle(e.target.value)} className="w-full border mb-4" />
         <div className="grid grid-cols-9 grid-rows-9 text-center mx-auto font-bold">
           {puzzle.split('').map((cell, i) => {
             const solution = parsedSolution?.[i]
