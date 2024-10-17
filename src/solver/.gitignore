@@ -1,0 +1,7 @@
+venv
+emsdk
+
+build
+dist
+.pyodide-**
+*.egg-info
